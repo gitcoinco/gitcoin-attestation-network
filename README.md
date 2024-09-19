@@ -1,6 +1,6 @@
-# Gitcoin Attestation Network (POC)
+# Gitcoin Attestation Network
 
-This repository contains a Proof of Concept (POC) for the Gitcoin Attestation Network. This feature allows users to mint on-chain attestations as proof of their donations. Attestations are created using delegated signing and stored on-chain to ensure transparency and verifiable records of contributions.
+This repository contains a Proof of Concept for the Gitcoin Attestation Network. This feature allows users to mint on-chain attestations as proof of their donations. Attestations are created using delegated signing and stored on-chain to ensure transparency and verifiable records of contributions.
 
 ## Table of Contents
 
@@ -64,13 +64,13 @@ The Gitcoin Attestation Network currently supports the following networks native
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/gitcoinco/gitcoin-attestation-network-poc.git
+   git clone https://github.com/gitcoinco/gitcoin-attestation-network.git
    ```
 
 2. Install dependencies:
 
    ```bash
-   cd gitcoin-attestation-network-poc/contracts
+   cd gitcoin-attestation-network/contracts
    bun install
    ```
 

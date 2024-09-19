@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+
 import dotenv from "dotenv";
 import "./tasks/index";
 
@@ -7,7 +8,7 @@ dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.27",
+    version: "0.8.22",
     settings: {
       optimizer: {
         enabled: true,
