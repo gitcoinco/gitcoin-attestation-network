@@ -12,6 +12,8 @@ This schema records when a user makes one or more donations to different project
 - **timestamp**: Time when the donations were made (`uint64`).
 - **currency**: Type of currency used (e.g., ETH, DAI) (`string`).
 - **network**: Network ID (`uint16`) where the donations were made (e.g., Ethereum, Polygon).
+- **fee**: 
+- **signature**:
 
 ### **Description**
 This schema works across any EAS-supported blockchain network, making it future-proof. Attestations are network-agnostic, so as Gitcoin expands to more chains, an aggregator can easily gather them across networks.

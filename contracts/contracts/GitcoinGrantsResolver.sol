@@ -6,6 +6,7 @@ import {SchemaResolver} from "@ethereum-attestation-service/eas-contracts/contra
 import {IEAS, Attestation} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {SafeTransferLib} from "solady/src/utils/SafeTransferLib.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 /**
  * @title GitcoinGrantsResolver
@@ -32,8 +33,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     bytes32 public constant DELEGATOR_ROLE = keccak256("DELEGATOR_ROLE");
 
     /// @notice Role for managing the delegators
-    bytes32 public constant DELEGATORS_MANAGER_ROLE =
-        keccak256("DELEGATORS_MANAGER_ROLE");
+    bytes32 public constant DELEGATORS_MANAGER_ROLE = keccak256("DELEGATORS_MANAGER_ROLE");
 
     /// @notice Address of the native token
     address public constant NATIVE = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
@@ -64,13 +64,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators The list of initial valid delegators.
      * @param _treasury The address of the treasury.
      */
-    constructor(
-        IEAS _eas,
-        address _admin,
-        address _manager,
-        address[] memory _delegators,
-        address _treasury
-    ) SchemaResolver(_eas) {
+    constructor(IEAS _eas, address _admin, address _manager, address[] memory _delegators, address _treasury)
+        SchemaResolver(_eas)
+    {
         // Set the admin role to the provided admin address
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(DELEGATORS_MANAGER_ROLE, _manager);
@@ -90,13 +86,29 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param attestation The attestation data.
      * @return Boolean indicating the success of the attestation.
      */
-    function onAttest(
-        Attestation calldata attestation,
-        uint256 /* value */
-    ) internal view override returns (bool) {
+    function onAttest(Attestation calldata attestation, uint256 value) internal override returns (bool) {
         address attester = attestation.attester;
         if (!hasRole(DELEGATOR_ROLE, attester)) {
             revert UnauthorizedAttester();
+        }
+
+        bytes memory data = attestation.data;
+        // depends on the schema, etc..
+        (uint256 timestamp, uint256 totalAmount, uint256 fee, bytes memory signature) =
+            abi.decode(data, (uint256, uint256, uint256, bytes));
+
+        bytes32 messageHash = keccak256(abi.encodePacked(timestamp, totalAmount, fee));
+        bytes32 ethSignedMessageHash = ECDSA.toEthSignedMessageHash(messageHash);
+
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
+
+        // Check if the recovered signer matches the attester and if the fee matches the value
+        if (recoveredSigner == attester && fee == value) {
+            // Transfer the fee to the feeReceiver
+            (bool success,) = feeReceiver.call{value: fee}("");
+            require(success, "Fee transfer failed");
+        } else {
+            revert InvalidSignatureOrFee();
         }
 
         return true;
@@ -106,10 +118,12 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @dev Checks if an attestation can be revoked.
      * @return Boolean indicating whether the attestation can be revoked.
      */
-    function onRevoke(
-        Attestation calldata /* attestation */,
-        uint256 /* value */
-    ) internal pure override returns (bool) {
+    function onRevoke(Attestation calldata, /* attestation */ uint256 /* value */ )
+        internal
+        pure
+        override
+        returns (bool)
+    {
         return false;
     }
 
@@ -126,8 +140,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators An array of addresses representing the delegators to be added.
      */
     function addDelegators(address[] memory _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
             revert NotDelegatorsManager();
+        }
 
         uint256 length = _delegators.length;
         for (uint256 i = 0; i < length; i++) {
@@ -140,8 +155,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators An array of addresses representing the delegators to be removed.
      */
     function removeDelegators(address[] memory _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
             revert NotDelegatorsManager();
+        }
 
         uint256 length = _delegators.length;
         for (uint256 i = 0; i < length; i++) {
@@ -187,11 +203,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _to The address to transfer to
      * @param _amount The amount to transfer
      */
-    function transferAmount(
-        address _token,
-        address _to,
-        uint256 _amount
-    ) internal {
+    function transferAmount(address _token, address _to, uint256 _amount) internal {
         if (_token == NATIVE) {
             _to.safeTransferETH(_amount);
         } else {
@@ -204,7 +216,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegator The address of the new valid delegator.
      */
     function _addDelegator(address _delegator) private {
-        if(_delegator == address(0)) {
+        if (_delegator == address(0)) {
             revert ZeroAddress();
         }
         _grantRole(DELEGATOR_ROLE, _delegator);
