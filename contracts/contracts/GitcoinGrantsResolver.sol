@@ -57,9 +57,11 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     /**
      * @dev Constructor to initialize the contract with essential parameters.
-     * @param admin The address of the contract admin (owner).
-     * @param manager The manager of the contract delegators.
-     * @param delegators The list of initial valid delegators.
+     * @param _eas The address of the EAS contract.
+     * @param _admin The address of the contract admin (owner).
+     * @param _manager The manager of the contract delegators.
+     * @param _delegators The list of initial valid delegators.
+     * @param _treasury The address of the treasury.
      */
     constructor(
         IEAS _eas,
@@ -120,25 +122,27 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     /**
      * @notice Add delegators.
-     * @param delegators An array of addresses representing the delegators to be added.
+     * @param _delegators An array of addresses representing the delegators to be added.
      */
-    function addDelegators(address[] _delegators) public {
+    function addDelegators(address[] memory _delegators) public {
         if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
             revert NotDelegatorsManager();
+
         for (uint256 i = 0; i < _delegators.length; i++) {
-            _addDelegator(delegator);
+            _addDelegator(_delegators[i]);
         }
     }
 
     /**
      * @notice Remove delegators.
-     * @param delegators An array of addresses representing the delegators to be removed.
+     * @param _delegators An array of addresses representing the delegators to be removed.
      */
-    function removeDelegators(address[] _delegators) public {
+    function removeDelegators(address[] memory _delegators) public {
         if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
             revert NotDelegatorsManager();
+
         for (uint256 i = 0; i < _delegators.length; i++) {
-            _removeDelegator(delegator);
+            _removeDelegator(_delegators[i]);
         }
     }
 
@@ -191,7 +195,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     /**
      * @notice Adds a new valid delegator.
-     * @param delegator The address of the new valid delegator.
+     * @param _delegator The address of the new valid delegator.
      */
     function _addDelegator(address _delegator) private {
         _grantRole(DELEGATOR_ROLE, _delegator);
@@ -199,7 +203,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     /**
      * @notice Removes a delegator.
-     * @param delegator The address of the valid delegator to be removed.
+     * @param _delegator The address of the valid delegator to be removed.
      */
     function _removeDelegator(address _delegator) private {
         _revokeRole(DELEGATOR_ROLE, _delegator);
