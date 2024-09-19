@@ -1,6 +1,7 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.22;
 
+// External Libraries
 import {SchemaResolver} from "@ethereum-attestation-service/eas-contracts/contracts/resolver/SchemaResolver.sol";
 import {IEAS, Attestation} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
@@ -14,18 +15,44 @@ import {SafeTransferLib} from "solady/src/utils/SafeTransferLib.sol";
 contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     using SafeTransferLib for address;
 
+    // ===============
+    // === Errors ====
+    // ===============
+
     error UnauthorizedAttester();
     error NotDelegatorsManager();
     error NotAdmin();
 
-    /// @notice Role for valid delegators
-    bytes32 public constant VALID_DELEGATOR_ROLE = keccak256("VALID_DELEGATOR_ROLE");
+    // ==================
+    // === Constants ====
+    // ==================
+
+    /// @notice Role for delegators
+    bytes32 public constant DELEGATOR_ROLE = keccak256("DELEGATOR_ROLE");
     
-    /// @notice Role for managing the valid delegators
+    /// @notice Role for managing the delegators
     bytes32 public constant DELEGATORS_MANAGER_ROLE = keccak256("DELEGATORS_MANAGER_ROLE");
     
     /// @notice Address of the native token
     address public constant NATIVE = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+
+    // ==================
+    // === Variables ====
+    // ==================
+
+    address public treasury;
+
+    // ==================
+    // ===== Events =====
+    // ==================
+
+    /// @notice Emitted when the treasury address is updated.
+    /// @param treasury The address of the treasury.
+    event TreasuryUpdated(address indexed treasury);
+
+    /// ====================================
+    /// ========== Constructor =============
+    /// ====================================
 
     /**
      * @dev Constructor to initialize the contract with essential parameters.
@@ -34,20 +61,26 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param delegators The list of initial valid delegators.
      */
     constructor(
-        IEAS eas,
-        address admin,
-        address manager,
-        address[] memory delegators
-    ) SchemaResolver(eas) {
+        IEAS _eas,
+        address _admin,
+        address _manager,
+        address[] memory _delegators,
+        address _treasury
+    ) SchemaResolver(_eas) {
         // Set the admin role to the provided admin address
-        _grantRole(DEFAULT_ADMIN_ROLE, admin);
-        _grantRole(DELEGATORS_MANAGER_ROLE, manager);
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(DELEGATORS_MANAGER_ROLE, _manager);
 
-        // Assign the VALID_DELEGATOR_ROLE to initial delegators
-        for (uint256 i = 0; i < delegators.length; i++) {
-            _grantRole(VALID_DELEGATOR_ROLE, delegators[i]);
-        }
+        // Assign the DELEGATOR_ROLE to initial delegators
+        addDelegators(_delegators);
+
+        updateTreasury(_treasury);
     }
+
+
+    /// ====================================
+    /// ======= External / Public ==========
+    /// ====================================
 
     /**
      * @dev Handles attestation by validating the attester.
@@ -59,7 +92,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         uint256 /* value */
     ) internal view override returns (bool) {
         address attester = attestation.attester;
-        if (!hasRole(VALID_DELEGATOR_ROLE, attester)) {
+        if (!hasRole(DELEGATOR_ROLE, attester)) {
             revert UnauthorizedAttester();
         }
 
@@ -86,25 +119,37 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     }
 
     /**
-     * @notice Adds a new valid delegator.
-     * @param delegator The address of the new valid delegator.
+     * @notice Add delegators.
+     * @param delegators An array of addresses representing the delegators to be added.
      */
-    function addValidDelegator(address delegator) external {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
-            revert NotDelegatorsManager();
+    function addDelegators(address[] _delegators) public {
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) revert NotDelegatorsManager();
+        for (uint256 i = 0; i < _delegators.length; i++) {
+            _addDelegator(delegator);
         }
-        _grantRole(VALID_DELEGATOR_ROLE, delegator);
     }
 
     /**
-     * @notice Removes a valid delegator.
-     * @param delegator The address of the valid delegator to be removed.
+     * @notice Remove delegators.
+     * @param delegators An array of addresses representing the delegators to be removed.
      */
-    function removeValidDelegator(address delegator) external {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
-            revert NotDelegatorsManager();
+    function removeDelegators(address[] _delegators) public {
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) revert NotDelegatorsManager();
+        for (uint256 i = 0; i < _delegators.length; i++) {
+            _removeDelegator(delegator);
         }
-        _revokeRole(VALID_DELEGATOR_ROLE, delegator);
+    }
+
+    /**
+     * @notice Updates the treasury address.
+     * @param _treasury The address of the treasury.
+     */
+    function updateTreasury(address _treasury) public {
+        if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) {
+            revert NotAdmin();
+        }
+        treasury = _treasury;
+        emit TreasuryUpdated(treasury);
     }
 
     /**
@@ -124,6 +169,10 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         transferAmount(_token, _to, _amount);
     }
 
+    /// ====================================
+    /// ======= Internal / Private =========
+    /// ====================================
+
     /**
      * @notice Transfer an amount of a token to an address
      * @param _token The token to transfer
@@ -136,5 +185,21 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         } else {
             _token.safeTransfer(_to, _amount);
         }
+    }
+
+    /**
+     * @notice Adds a new valid delegator.
+     * @param delegator The address of the new valid delegator.
+     */
+    function _addDelegator(address _delegator) private {
+        _grantRole(DELEGATOR_ROLE, _delegator);
+    }
+
+    /**
+     * @notice Removes a delegator.
+     * @param delegator The address of the valid delegator to be removed.
+     */
+    function _removeDelegator(address _delegator) private {
+        _revokeRole(DELEGATOR_ROLE, _delegator);
     }
 }
