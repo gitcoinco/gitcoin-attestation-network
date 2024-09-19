@@ -4,6 +4,7 @@ task(
   "deployResolver",
   "deploys the custom EAS_Schema_Resolver and then creates the schema"
 ).setAction(async (_, hre) => {
+  
   const { ethers } = hre;
   const [wallet] = await ethers.getSigners();
 
@@ -21,6 +22,8 @@ task(
   );
   const GitcoinGrantsResolver = await GitcoinGrantsResolverFactory.deploy(
     EAS_OPTIMISM_SEPOLIA,
+    address,
+    address,
     [address]
   );
 

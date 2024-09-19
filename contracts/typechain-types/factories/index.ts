@@ -4,3 +4,4 @@
 export * as ethereumAttestationService from "./@ethereum-attestation-service";
 export * as openzeppelin from "./@openzeppelin";
 export * as contracts from "./contracts";
+export * as solady from "./solady";
