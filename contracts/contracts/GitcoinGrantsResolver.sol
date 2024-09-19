@@ -22,6 +22,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     error UnauthorizedAttester();
     error NotDelegatorsManager();
+    error InvalidSignatureOrFee();
     error NotAdmin();
     error ZeroAddress();
 
