@@ -22,6 +22,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     error UnauthorizedAttester();
     error NotDelegatorsManager();
     error NotAdmin();
+    error ZeroAddress();
 
     // ==================
     // === Constants ====
@@ -128,7 +129,8 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
             revert NotDelegatorsManager();
 
-        for (uint256 i = 0; i < _delegators.length; i++) {
+        uint256 length = _delegators.length;
+        for (uint256 i = 0; i < length; i++) {
             _addDelegator(_delegators[i]);
         }
     }
@@ -141,7 +143,8 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
             revert NotDelegatorsManager();
 
-        for (uint256 i = 0; i < _delegators.length; i++) {
+        uint256 length = _delegators.length;
+        for (uint256 i = 0; i < length; i++) {
             _removeDelegator(_delegators[i]);
         }
     }
@@ -153,6 +156,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     function updateTreasury(address _treasury) public {
         if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) {
             revert NotAdmin();
+        }
+        if (_treasury == address(0)) {
+            revert ZeroAddress();
         }
         treasury = _treasury;
         emit TreasuryUpdated(treasury);
@@ -198,6 +204,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegator The address of the new valid delegator.
      */
     function _addDelegator(address _delegator) private {
+        if(_delegator == address(0)) {
+            revert ZeroAddress();
+        }
         _grantRole(DELEGATOR_ROLE, _delegator);
     }
 
