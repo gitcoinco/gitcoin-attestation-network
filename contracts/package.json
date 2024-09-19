@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "compile": "hardhat compile",
+    "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
     "delegate": "hardhat delegate --network optimism_sepolia",
     "deployResolver": "hardhat deployResolver --network optimism_sepolia"
   },
@@ -35,5 +36,9 @@
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
     "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "prettier-plugin-solidity": "^1.4.1"
   }
 }

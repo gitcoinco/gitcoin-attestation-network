@@ -29,10 +29,11 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
     /// @notice Role for delegators
     bytes32 public constant DELEGATOR_ROLE = keccak256("DELEGATOR_ROLE");
-    
+
     /// @notice Role for managing the delegators
-    bytes32 public constant DELEGATORS_MANAGER_ROLE = keccak256("DELEGATORS_MANAGER_ROLE");
-    
+    bytes32 public constant DELEGATORS_MANAGER_ROLE =
+        keccak256("DELEGATORS_MANAGER_ROLE");
+
     /// @notice Address of the native token
     address public constant NATIVE = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
@@ -76,7 +77,6 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
 
         updateTreasury(_treasury);
     }
-
 
     /// ====================================
     /// ======= External / Public ==========
@@ -123,7 +123,8 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param delegators An array of addresses representing the delegators to be added.
      */
     function addDelegators(address[] _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) revert NotDelegatorsManager();
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+            revert NotDelegatorsManager();
         for (uint256 i = 0; i < _delegators.length; i++) {
             _addDelegator(delegator);
         }
@@ -134,7 +135,8 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param delegators An array of addresses representing the delegators to be removed.
      */
     function removeDelegators(address[] _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) revert NotDelegatorsManager();
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+            revert NotDelegatorsManager();
         for (uint256 i = 0; i < _delegators.length; i++) {
             _removeDelegator(delegator);
         }
@@ -158,11 +160,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _to The address to which the balance will be transferred.
      * @param _amount The amount to be transferred.
      */
-    function withdraw(
-        address _token, 
-        address _to, 
-        uint256 _amount
-    ) external {
+    function withdraw(address _token, address _to, uint256 _amount) external {
         if (!hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) {
             revert NotAdmin();
         }
@@ -179,7 +177,11 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _to The address to transfer to
      * @param _amount The amount to transfer
      */
-    function transferAmount(address _token, address _to, uint256 _amount) internal {
+    function transferAmount(
+        address _token,
+        address _to,
+        uint256 _amount
+    ) internal {
         if (_token == NATIVE) {
             _to.safeTransferETH(_amount);
         } else {
