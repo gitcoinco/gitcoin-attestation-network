@@ -8,13 +8,26 @@ dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.22",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
+    compilers: [
+      {
+        version: "0.8.22",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
       },
-    },
+      {
+        version: "0.8.26",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
   },
   paths: {
     sources: "./contracts",
@@ -22,8 +35,14 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     artifacts: "./artifacts",
   },
-  defaultNetwork: "optimism_sepolia",
+  defaultNetwork: "hardhat",
   networks: {
+    hardhat: {
+      mining: {
+        auto: true,
+        interval: 0,
+      },
+    },
     optimism_sepolia: {
       chainId: 11155420,
       url: process.env.OPTIMISM_SEPOLIA_RPC_URL! as string,
