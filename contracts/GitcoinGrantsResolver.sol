@@ -52,6 +52,20 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     /// @param treasury The address of the treasury.
     event TreasuryUpdated(address indexed treasury);
 
+    /// @notice Emitted when an attestation happens.
+    /// @param uid Attesation ID.
+    /// @param recipient The address of the recipient.
+    /// @param fee The attestation fee.
+    /// @param data The attestation data.
+    /// @param refUID The reference attestation ID.
+    event OnAttested(
+        bytes32 indexed uid,
+        address indexed recipient,
+        uint256 fee,
+        bytes data,
+        bytes32 refUID
+    );
+
     /// ====================================
     /// ========== Constructor =============
     /// ====================================
@@ -92,12 +106,22 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      */
     function onAttest(
         Attestation calldata attestation,
-        uint256 /* value */
-    ) internal view override returns (bool) {
-        address attester = attestation.attester;
-        if (!hasRole(DELEGATOR_ROLE, attester)) {
+        uint256 value
+    ) internal override returns (bool) {
+        if (!hasRole(DELEGATOR_ROLE, attestation.attester)) {
             revert UnauthorizedAttester();
         }
+
+        (bool success, ) = treasury.call{value: value}("");
+        require(success, "Fee transfer failed");
+
+        emit OnAttested(
+            attestation.uid,
+            attestation.recipient,
+            value,
+            attestation.data,
+            attestation.refUID
+        );
 
         return true;
     }
@@ -107,7 +131,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @return Boolean indicating whether the attestation can be revoked.
      */
     function onRevoke(
-        Attestation calldata /* attestation */,
+        Attestation calldata, /* attestation */
         uint256 /* value */
     ) internal pure override returns (bool) {
         return false;
@@ -126,8 +150,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators An array of addresses representing the delegators to be added.
      */
     function addDelegators(address[] memory _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
             revert NotDelegatorsManager();
+        }
 
         uint256 length = _delegators.length;
         for (uint256 i = 0; i < length; i++) {
@@ -140,8 +165,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators An array of addresses representing the delegators to be removed.
      */
     function removeDelegators(address[] memory _delegators) public {
-        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender))
+        if (!hasRole(DELEGATORS_MANAGER_ROLE, msg.sender)) {
             revert NotDelegatorsManager();
+        }
 
         uint256 length = _delegators.length;
         for (uint256 i = 0; i < length; i++) {
@@ -204,7 +230,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegator The address of the new valid delegator.
      */
     function _addDelegator(address _delegator) private {
-        if(_delegator == address(0)) {
+        if (_delegator == address(0)) {
             revert ZeroAddress();
         }
         _grantRole(DELEGATOR_ROLE, _delegator);
