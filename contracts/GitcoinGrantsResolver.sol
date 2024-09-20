@@ -52,16 +52,18 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     /// @param treasury The address of the treasury.
     event TreasuryUpdated(address indexed treasury);
 
-    /// @notice Emitted when an attestation is received.
+    /// @notice Emitted when an attestation happens.
     /// @param uid Attesation ID.
     /// @param recipient The address of the recipient.
     /// @param fee The attestation fee.
     /// @param data The attestation data.
-    event Attested(
+    /// @param refUID The reference attestation ID.
+    event OnAttested(
         bytes32 indexed uid,
         address indexed recipient,
         uint256 fee,
-        bytes data
+        bytes data,
+        bytes32 refUID
     );
 
     /// ====================================
@@ -113,11 +115,12 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
         (bool success, ) = treasury.call{value: value}("");
         require(success, "Fee transfer failed");
 
-        emit AttesationReceived(
+        emit OnAttested(
             attestation.uid,
             attestation.recipient,
             value,
-            attestation.data
+            attestation.data,
+            attestation.refUID
         );
 
         return true;
