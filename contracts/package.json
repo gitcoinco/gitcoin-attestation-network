@@ -1,13 +1,14 @@
 {
-  "name": "gitcoin-attestation-service-poc",
+  "name": "gitcoin-attestation-service",
   "version": "0.0.1",
-  "description": "",
+  "description": " schema resolver that facilitates attestation resolution for the Gitcoin Attestation Network.",
   "scripts": {
     "compile": "hardhat compile",
+    "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
     "delegate": "hardhat delegate --network optimism_sepolia",
     "deployResolver": "hardhat deployResolver --network optimism_sepolia"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "dependencies": {
     "@ethereum-attestation-service/eas-contracts": "^1.7.1",
     "@ethereum-attestation-service/eas-sdk": "^2.6.0",
@@ -35,5 +36,10 @@
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
     "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "prettier": "^3.3.3",
+    "prettier-plugin-solidity": "^1.4.1"
   }
 }
