@@ -5,8 +5,8 @@
   "scripts": {
     "compile": "hardhat compile",
     "prettier": "prettier --write --plugin=prettier-plugin-solidity 'contracts/**/*.sol'",
-    "delegate": "hardhat delegate --network optimism_sepolia",
-    "deployResolver": "hardhat deployResolver --network optimism_sepolia"
+    "deployResolver": "hardhat deployResolver",
+    "test": "hardhat test"
   },
   "license": "AGPL-3.0-only",
   "dependencies": {

@@ -1,0 +1,25 @@
+{
+  "1": {},
+  "10": {},
+  "137": {},
+  "8453": {},
+  "42161": {},
+  "42170": {},
+  "42220": {},
+  "81457": {},
+  "81458": {},
+  "534352": {},
+  "11155111": {
+    "name": "GitcoinGrantsResolver",
+    "resolver": "0xBAa70bbAB3C4a7265f879bb3658336DE893b8582",
+    "schemaUID": "0xcc6c5d91ac6fbcbfed2100e677a8baf0ee28966a661af106f717ff41d2859ab3",
+    "treasury": "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+    "owner": "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+    "delegators": [
+      "0x0D1781F0b693b35939A49831A6C799B938Bd2F80"
+    ],
+    "managers": "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+    "deployerAddress": "0x0D1781F0b693b35939A49831A6C799B938Bd2F80"
+  },
+  "11155420": {}
+}
