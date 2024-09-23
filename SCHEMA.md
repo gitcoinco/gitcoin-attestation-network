@@ -28,12 +28,12 @@ Note:
 [
     {
         "chainId" : number,
-        "roundId" : number,
         "txnHash" : string,
         "projects": [
             "id"           : string, // registry profile id 
             "anchor"       : string, // registry profile anchor
             "applicationId": string, // round's application id
+            "roundId"      : number,
             "amountInUSD"  : bigint, // total usd amount
             "amount"       : bigint, // total tokens
             "token"        : string  // token address  
