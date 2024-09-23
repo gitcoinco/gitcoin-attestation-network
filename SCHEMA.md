@@ -36,7 +36,7 @@ Note:
             "applicationId": string, // application id in pool
             "applicaionCId": string, // application metadata
             "poolId"       : number, // allo poolId
-            "roundType"    : string, // allo strategy name
+            "strategy"     : string, // allo strategy name
             "amountInUSD"  : bigint, // total usd amount
             "amount"       : bigint, // total tokens
             "token"        : string  // token address  
