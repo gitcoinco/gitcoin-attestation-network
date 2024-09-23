@@ -273,36 +273,32 @@ describe("GitcoinGrantsResolver", () => {
     );
   });
 
-  // todo: fix this
   it("should revert if trying to withdraw more native tokens than balance", async () => {
     const amount = ethers.parseEther("10"); // Assuming contract does not have this much balance
-
-    // await expectRevert(
-    //   resolver
-    //     .connect(admin)
-    //     .withdraw(await resolver.NATIVE(), await admin.getAddress(), amount),
-    //   "SafeTransferLib: ETH_TRANSFER_FAILED",
-    // );
+    await expectRevert(
+      resolver
+        .connect(admin)
+        .withdraw(await resolver.NATIVE(), await admin.getAddress(), amount),
+      `AddressInsufficientBalance("${await resolver.getAddress()}")`,
+    );
   });
 
-  // todo: fix this
   it("should revert if trying to withdraw more ERC20 tokens than balance", async () => {
     const TestERC20 = await ethers.getContractFactory("TestERC20");
     const testToken = await TestERC20.deploy("Test", "TST", 18);
     await testToken.waitForDeployment();
 
     const amount = ethers.parseEther("1000000"); // Assuming contract does not have this much balance
-
-    // await expectRevert(
-    //   resolver
-    //     .connect(admin)
-    //     .withdraw(
-    //       await testToken.getAddress(),
-    //       await admin.getAddress(),
-    //       amount,
-    //     ),
-    //   "SafeTransferLib: TRANSFER_FAILED",
-    // );
+    await expectRevert(
+      resolver
+        .connect(admin)
+        .withdraw(
+          await testToken.getAddress(),
+          await admin.getAddress(),
+          amount,
+        ),
+      `ERC20InsufficientBalance("${await resolver.getAddress()}", 0, ${amount})`,
+    );
   });
 
   it("should allow attesting to the correct recipient", async () => {

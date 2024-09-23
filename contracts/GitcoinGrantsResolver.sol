@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity 0.8.22;
+pragma solidity 0.8.26;
 
 // External Libraries
 import {SchemaResolver} from "@ethereum-attestation-service/eas-contracts/contracts/resolver/SchemaResolver.sol";
 import {IEAS, Attestation} from "@ethereum-attestation-service/eas-contracts/contracts/IEAS.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
-import {SafeTransferLib} from "solady/src/utils/SafeTransferLib.sol";
-
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 /**
  * @title GitcoinGrantsResolver
  * @notice A schema resolver that facilitates attestation resolution for the Gitcoin Attestation Network.
  * @dev The contract uses AccessControl for managing roles of valid delegators and delegator managers.
  */
 contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
-    using SafeTransferLib for address;
-
+    using Address for address payable;
+    using SafeERC20 for IERC20;
     // ===============
     // === Errors ====
     // ===============
@@ -190,9 +190,9 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      */
     function transferAmount(address _token, address _to, uint256 _amount) internal {
         if (_token == NATIVE) {
-            _to.safeTransferETH(_amount);
+            payable(_to).sendValue(_amount);
         } else {
-            _token.safeTransfer(_to, _amount);
+            IERC20(_token).safeTransfer(_to, _amount);
         }
     }
 

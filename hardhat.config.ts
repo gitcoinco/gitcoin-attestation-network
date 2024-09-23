@@ -101,7 +101,7 @@ const config: HardhatUserConfig = {
     },
     "arbitrum-mainnet": createMainnetConfig(
       "arbitrum-mainnet",
-      `https://arb-mainnet.g.alchemy.com/v2/${alchemyIdKey}`
+      `https://arb-mainnet.g.alchemy.com/v2/${alchemyIdKey}`,
     ),
     "celo-mainnet": {
       ...createMainnetConfig("celo-mainnet"),
@@ -124,7 +124,7 @@ const config: HardhatUserConfig = {
     // Test Networks
     sepolia: createTestnetConfig(
       "sepolia",
-      `https://eth-sepolia.g.alchemy.com/v2/${alchemyIdKey}`
+      `https://eth-sepolia.g.alchemy.com/v2/${alchemyIdKey}`,
     ),
     "optimism-sepolia": {
       ...createTestnetConfig("optimism-sepolia"),
@@ -135,11 +135,12 @@ const config: HardhatUserConfig = {
     localhost: createTestnetConfig("localhost", "http://localhost:8545"),
     hardhat: {
       mining: {
-        auto: false,
-        interval: 1000,
+        auto: true,
+        interval: 0,
       },
     },
   },
+  defaultNetwork: "hardhat",
   gasReporter: {
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     enabled: process.env.REPORT_GAS !== undefined,
