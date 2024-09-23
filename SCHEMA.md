@@ -11,8 +11,8 @@ This schema works across any EAS-supported blockchain network, making it future-
 {
     "projects"          : "uint64" // networks where the round reside
     "rounds"            : "uint64", // rounds contributed to
-    "chainIds"          : "string", // chainIds contributed to
-    "totalUSDAmount"    : "uint64", // total contribution
+    "chainIds"          : "uint64", // chainIds contributed to
+    "totalUSDAmount"    : "uint128", // total contribution
     "timestamp"         : "uint64", // time of donation
     "metadataPtr"       : "string", // Link to details about contribution (eg: IPFS)
 }
