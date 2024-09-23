@@ -1,2 +1,1 @@
-import "./delegate"
 import "./deployResolver"
