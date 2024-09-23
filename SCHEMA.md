@@ -7,9 +7,11 @@ This schema works across any EAS-supported blockchain network, making it future-
 
 ### Schema Details
 
-```json
+```javascript
 {
-    "roundIds"          : "(uint64,uint64)[]", // array of tuple(chainId, roundId)
+    "projects"          : "uint64" // networks where the round reside
+    "rounds"            : "uint64", // rounds contributed to
+    "chainIds"          : "string", // chainIds contributed to
     "totalUSDAmount"    : "uint64", // total contribution
     "timestamp"         : "uint64", // time of donation
     "metadataPtr"       : "string", // Link to details about contribution (eg: IPFS)
@@ -19,3 +21,23 @@ This schema works across any EAS-supported blockchain network, making it future-
 Note: 
 - `donor` can be obtained from `attesation.recipient`
 - `refUID` would be used to chain/link all your attestation
+
+- ### MetadataPtr
+
+```javascript
+[
+    {
+        "chainId" : number,
+        "roundId" : number,
+        "txnHash" : string,
+        "projects": [
+            "id"           : string, // registry profile id 
+            "anchor"       : string, // registry profile anchor
+            "applicationId": string, // round's application id
+            "amountInUSD"  : bigint, // total usd amount
+            "amount"       : bigint, // total tokens
+            "token"        : string  // token address  
+        ]
+    }
+]
+```
