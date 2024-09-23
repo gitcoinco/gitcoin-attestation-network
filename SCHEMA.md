@@ -35,6 +35,7 @@ Note:
             "anchor"       : string, // registry profile anchor
             "applicationId": string, // application id in pool
             "applicationCId": string, // application metadata
+            "payoutAddress": string, // payout address
             "poolId"       : number, // allo poolId
             "strategy"     : string, // allo strategy name
             "amountInUSD"  : bigint, // total usd amount
