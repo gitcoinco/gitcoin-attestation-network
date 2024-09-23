@@ -14,7 +14,7 @@ This schema works across any EAS-supported blockchain network, making it future-
     "chainIdsContributed"   : "uint64", // chainIds contributed to
     "totalUSDAmount"        : "uint128", // total contribution
     "timestamp"             : "uint64", // time of donation
-    "metadataPtr"           : "string", // Link to details about contribution (eg: IPFS)
+    "metadataCid"           : "string", // Link to details about contribution (eg: IPFS)
 }
 ```
 
