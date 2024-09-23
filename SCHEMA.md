@@ -9,12 +9,12 @@ This schema works across any EAS-supported blockchain network, making it future-
 
 ```javascript
 {
-    "projects"          : "uint64" // networks where the round reside
-    "rounds"            : "uint64", // rounds contributed to
-    "chainIds"          : "uint64", // chainIds contributed to
-    "totalUSDAmount"    : "uint128", // total contribution
-    "timestamp"         : "uint64", // time of donation
-    "metadataPtr"       : "string", // Link to details about contribution (eg: IPFS)
+    "projectsContributed"   : "uint64" // networks where the round reside
+    "roundsContributed"     : "uint64", // rounds contributed to
+    "chainIdsContributed"   : "uint64", // chainIds contributed to
+    "totalUSDAmount"        : "uint128", // total contribution
+    "timestamp"             : "uint64", // time of donation
+    "metadataPtr"           : "string", // Link to details about contribution (eg: IPFS)
 }
 ```
 
