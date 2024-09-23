@@ -7,15 +7,40 @@ This schema works across any EAS-supported blockchain network, making it future-
 
 ### Schema Details
 
-```json
+```javascript
 {
-    "roundIds"          : "(uint64,uint64)[]", // array of tuple(chainId, roundId)
-    "totalUSDAmount"    : "uint64", // total contribution
-    "timestamp"         : "uint64", // time of donation
-    "metadataPtr"       : "string", // Link to details about contribution (eg: IPFS)
+    "projectsContributed"   : "uint64" // networks where the round reside
+    "roundsContributed"     : "uint64", // rounds contributed to
+    "chainIdsContributed"   : "uint64", // chainIds contributed to
+    "totalUSDAmount"        : "uint128", // total contribution
+    "timestamp"             : "uint64", // time of donation
+    "metadataCid"           : "string", // Link to details about contribution (eg: IPFS)
 }
 ```
 
 Note: 
 - `donor` can be obtained from `attesation.recipient`
 - `refUID` would be used to chain/link all your attestation
+
+- ### MetadataPtr
+
+```javascript
+[
+    {
+        "chainId" : number,
+        "txnHash" : string,
+        "projects": [
+            "id"           : string, // registry profile id
+            "title"        : string  // registry profile title
+            "anchor"       : string, // registry profile anchor
+            "applicationId": string, // application id in pool
+            "applicaionCId": string, // application metadata
+            "poolId"       : number, // allo poolId
+            "roundType"    : string, // allo strategy name
+            "amountInUSD"  : bigint, // total usd amount
+            "amount"       : bigint, // total tokens
+            "token"        : string  // token address  
+        ]
+    }
+]
+```
