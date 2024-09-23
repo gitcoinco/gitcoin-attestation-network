@@ -30,10 +30,13 @@ Note:
         "chainId" : number,
         "txnHash" : string,
         "projects": [
-            "id"           : string, // registry profile id 
+            "id"           : string, // registry profile id
+            "title"        : string  // registry profile title
             "anchor"       : string, // registry profile anchor
-            "applicationId": string, // round's application id
-            "roundId"      : number,
+            "applicationId": string, // application id in pool
+            "applicaionCId": string, // application metadata
+            "poolId"       : number, // allo poolId
+            "roundType"    : string, // allo strategy name
             "amountInUSD"  : bigint, // total usd amount
             "amount"       : bigint, // total tokens
             "token"        : string  // token address  
