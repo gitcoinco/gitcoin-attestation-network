@@ -1,7 +1,13 @@
 import { task } from "hardhat/config";
-import { easConfig, getRoles, schema } from "../scripts/config/eas.config";
-import { Deployments, verifyContract } from "../utils/scripts";
+import {
+  easConfig,
+  getRoles,
+  isTestnet,
+  schema,
+} from "./constants/config/eas.config";
+import { Deployments, verifyContract } from "./utils/scripts";
 import { TestSchemaRegistry } from "../typechain-types";
+import { EAS, SchemaEncoder } from "@ethereum-attestation-service/eas-sdk";
 
 task(
   "deployResolver",
@@ -57,7 +63,7 @@ Deploys GitcoinGrantsResolver.sol on ${networkName}
     "GitcoinGrantsResolver"
   );
   const GitcoinGrantsResolver = await GitcoinGrantsResolverFactory.deploy(
-    easConfig[chainId].eas,
+    easParams.eas,
     roles.owner,
     roles.manager,
     roles.delegators,
@@ -68,7 +74,7 @@ Deploys GitcoinGrantsResolver.sol on ${networkName}
 
   const EASRegistry = (await ethers.getContractAt(
     "TestSchemaRegistry",
-    easConfig[chainId].schemaRegistry.toString()
+    easParams.schemaRegistry.toString()
   )) as TestSchemaRegistry;
 
   const createSchema = await EASRegistry.register(
@@ -96,15 +102,75 @@ Deploys GitcoinGrantsResolver.sol on ${networkName}
 
   if (GitcoinGrantsResolverAddress) {
     await verifyContract(
-      resolver.toString(),
+      GitcoinGrantsResolverAddress,
       [
-        easConfig[chainId].eas.toString(),
-        roles.owner.toString(),
-        roles.manager.toString(),
+        easParams.eas,
+        roles.owner,
+        roles.manager,
         roles.delegators,
-        roles.treasury.toString(),
+        roles.treasury,
       ],
       hre
     );
+  }
+
+  if (isTestnet(networkName)) {
+    console.log("Test attestation on testnet...");
+    // Create an attestation using the eas sdk
+    const eas = new EAS(easParams.eas.toString()).connect(account);
+    const schemaEncoder = new SchemaEncoder(schema);
+
+    const schemaData = schemaEncoder.encodeData([
+      {
+        name: "projectsContributed",
+        type: "uint64",
+        value: 1,
+      },
+      {
+        name: "roundsContributed",
+        type: "uint64",
+        value: 1,
+      },
+      {
+        name: "chainIdsContributed",
+        type: "uint64",
+        value: 1,
+      },
+      {
+        name: "totalUSDAmount",
+        type: "uint128",
+        value: 60000,
+      },
+      {
+        name: "timestamp",
+        type: "uint64",
+        value: 1,
+      },
+      {
+        name: "metadataCid",
+        type: "string",
+        value:
+          "bafybeiberlhhvguxx73jhjmxmx2qdgrotriresuqayymtfwnfbyexmgpxu/test.json",
+      },
+    ]);
+    const attestTx = await eas.attest(
+      {
+        schema: schemaUID as string,
+        data: {
+          recipient: deployerAddress,
+          data: schemaData,
+          value: 0n,
+          expirationTime: 0n,
+          revocable: false,
+        },
+      },
+      {
+        value: 0,
+        gasLimit: 1000000,
+      }
+    );
+    await attestTx.wait();
+
+    console.log("Attestation created successfully");
   }
 });

@@ -37,7 +37,7 @@ export const verifyContract = async (
   await new Promise((r) => setTimeout(r, 20000));
   try {
     await hre.run("verify:verify", {
-      address: contractAddress.toString(),
+      address: contractAddress,
       contract: "contracts/GitcoinGrantsResolver.sol:GitcoinGrantsResolver",
       constructorArguments: verifyArgs,
       noCompile: true,
@@ -57,13 +57,13 @@ export class Deployments {
   constructor(chainId: number, contractName: string) {
     this.contractName = contractName;
     this.chainId = chainId;
-    this.path = `scripts/deployments/${contractName}.deployment.json`;
+    this.path = `tasks/constants/deployments/${contractName}.deployment.json`;
     this.configObject = this.readFile(this.contractName);
   }
 
   private readFile = (name: string) => {
     let configFile;
-    const path = `scripts/deployments/${name}.deployment.json`;
+    const path = `tasks/constants/deployments/${name}.deployment.json`;
     try {
       configFile = fs.readFileSync(path);
     } catch {

@@ -27,32 +27,22 @@ export const MainnetRoles: Roles = {
 };
 // TODO add real addresses here
 export const TestnetRoles: Roles = {
-  owner: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  treasury: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  manager: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  delegators: ["0x3CB79Ae4b3442990A491e356de26F4D8B244954d"],
+  owner: "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+  treasury: "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+  manager: "0x0D1781F0b693b35939A49831A6C799B938Bd2F80",
+  delegators: ["0x0D1781F0b693b35939A49831A6C799B938Bd2F80"],
 };
 
-const testnets = ["localhost", "sepolia", "optimism-sepolia"];
+const testnets = ["localhost", "hardhat", "sepolia", "optimism-sepolia"];
 
 export const getRoles = (networkName: string) => {
   return testnets.includes(networkName) ? TestnetRoles : MainnetRoles;
 };
-const chainIds = {
-  // local network
-  localhost: 31337,
-  // testnet
-  sepolia: 11155111,
-  "optimism-sepolia": 11155420,
-  // mainnet
-  mainnet: 1,
-  "optimism-mainnet": 10,
-  "celo-mainnet": 42220,
-  "arbitrum-mainnet": 42161,
-  base: 8453,
-  polygon: 137,
-  scroll: 534352,
+
+export const isTestnet = (networkName: string) => {
+  return testnets.includes(networkName);
 };
+
 export const easConfig: DeployParams = {
   /* ----------- Mainnets ---------- */
 
