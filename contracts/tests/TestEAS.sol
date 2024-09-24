@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.26;
 
-import { EAS } from "@ethereum-attestation-service/eas-contracts/contracts/EAS.sol";
+import {EAS} from "@ethereum-attestation-service/eas-contracts/contracts/EAS.sol";
 
-import { ISchemaRegistry } from "@ethereum-attestation-service/eas-contracts/contracts/ISchemaRegistry.sol";
+import {ISchemaRegistry} from "@ethereum-attestation-service/eas-contracts/contracts/ISchemaRegistry.sol";
 
 contract TestEAS is EAS {
     uint64 private constant INITIAL_TIME = 0;

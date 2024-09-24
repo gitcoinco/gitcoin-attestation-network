@@ -71,9 +71,13 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @param _delegators The list of initial valid delegators.
      * @param _treasury The address of the treasury.
      */
-    constructor(IEAS _eas, address _admin, address _manager, address[] memory _delegators, address _treasury)
-        SchemaResolver(_eas)
-    {
+    constructor(
+        IEAS _eas,
+        address _admin,
+        address _manager,
+        address[] memory _delegators,
+        address _treasury
+    ) SchemaResolver(_eas) {
         // Set the admin role to the provided admin address
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(DELEGATORS_MANAGER_ROLE, _manager);
@@ -98,7 +102,7 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
             revert UnauthorizedAttester();
         }
 
-        (bool success,) = treasury.call{value: value}("");
+        (bool success, ) = treasury.call{value: value}("");
         require(success, "Fee transfer failed");
 
         emit OnAttested(attestation.uid, attestation.recipient, value, attestation.data, attestation.refUID);
@@ -110,12 +114,10 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
      * @dev Checks if an attestation can be revoked.
      * @return Boolean indicating whether the attestation can be revoked.
      */
-    function onRevoke(Attestation calldata, /* attestation */ uint256 /* value */ )
-        internal
-        pure
-        override
-        returns (bool)
-    {
+    function onRevoke(
+        Attestation calldata, // attestation
+        uint256 //value
+    ) internal pure override returns (bool) {
         return false;
     }
 
@@ -211,11 +213,11 @@ contract GitcoinGrantsResolver is SchemaResolver, AccessControl {
     }
 
     /**
-     * 
+     *
      * @notice Updates the treasury address.
      * @param _treasury The address of the treasury.
      * @dev Updates the treasury address.
-     * 
+     *
      */
     function _updateTreasury(address _treasury) private {
         if (_treasury == address(0)) {
