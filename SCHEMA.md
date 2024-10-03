@@ -29,6 +29,7 @@ Note:
     {
         "chainId" : number,
         "txnHash" : string,
+        "impactImage": string,       // optional base64 img
         "projects": [
             "id"           : string, // registry profile id
             "title"        : string  // registry profile title
