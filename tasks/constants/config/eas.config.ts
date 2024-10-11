@@ -17,13 +17,11 @@ type Roles = {
 };
 
 type DeployParams = Record<number, EASConfig>;
-
-// TODO add real addresses here
 export const MainnetRoles: Roles = {
-  owner: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  treasury: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  manager: "0x3CB79Ae4b3442990A491e356de26F4D8B244954d",
-  delegators: ["0x3CB79Ae4b3442990A491e356de26F4D8B244954d"],
+  owner: "0xeca7e28ccf9f406a5b7168e0e87a1e4c8f9b7b33",
+  treasury: "0xf2A203d197F704a13e07d42606a06bff5C7498EA",
+  manager: "0xeca7e28ccf9f406a5b7168e0e87a1e4c8f9b7b33",
+  delegators: ["0xeca7e28ccf9f406a5b7168e0e87a1e4c8f9b7b33"],
 };
 // TODO add real addresses here
 export const TestnetRoles: Roles = {
