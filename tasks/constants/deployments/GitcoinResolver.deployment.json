@@ -13,7 +13,8 @@
       "0xeca7e28ccf9f406a5b7168e0e87a1e4c8f9b7b33"
     ],
     "managers": "0xeca7e28ccf9f406a5b7168e0e87a1e4c8f9b7b33",
-    "deployerAddress": "0xecA7E28CCF9f406a5B7168e0e87A1E4C8F9b7B33"
+    "deployerAddress": "0xecA7E28CCF9f406a5B7168e0e87A1E4C8F9b7B33",
+    "proxy": "0xeb2AddD987c2C4efF3237Ed6d829c214198c0189"
   },
   "42170": {},
   "42220": {},
